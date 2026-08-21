@@ -1,0 +1,55 @@
+project:
+  name: marketplace
+  basePackage: com.github.iknonuffin.marketplace
+
+generator:
+  generateControllers: true
+  generateServices: true
+  generateRepositories: true
+  generateDtos: true
+  generateEvents: false
+
+services:
+
+  - name: order-service
+
+    enums:
+      - name: OrderStatus
+        values:
+          - CREATED
+          - CONFIRMED
+          - CANCELLED
+          - COMPLETED
+
+    entities:
+      - name: Order
+
+        fields:
+          id: Long
+          userId: Long
+          status: OrderStatus
+          total: BigDecimal
+
+  - name: product-service
+
+    entities:
+      - name: Product
+
+        fields:
+          id: Long
+          name: String
+          price: BigDecimal
+
+  - name: user-service
+
+    entities:
+      - name: User
+
+        fields:
+          id: Long
+          username: String
+          password: String
+
+        overrides:
+          service:
+            name: OrderManagementService

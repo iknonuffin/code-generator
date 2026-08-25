@@ -1,20 +1,15 @@
 package org.codegen.parser;
 
 import org.codegen.spec.ProjectSpecification;
-import org.yaml.snakeyaml.Yaml;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.dataformat.yaml.YAMLMapper;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class YamlParser {
-    private final Yaml yaml =  new Yaml();
+    private final ObjectMapper objectMapper =  new YAMLMapper();
 
-    public ProjectSpecification parse(Path spec) throws IOException {
-
-        try (InputStream specStream = Files.newInputStream(spec)) {
-            return yaml.loadAs(specStream, ProjectSpecification.class);
-        }
+    public ProjectSpecification parse(Path spec) {
+        return objectMapper.readValue(spec, ProjectSpecification.class);
     }
 }

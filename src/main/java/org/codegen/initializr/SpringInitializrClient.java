@@ -1,6 +1,9 @@
 package org.codegen.initializr;
 
 import lombok.RequiredArgsConstructor;
+import org.codegen.exception.InitializrException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
@@ -11,27 +14,37 @@ import java.nio.file.Path;
 
 @RequiredArgsConstructor
 public class SpringInitializrClient {
+    private static final Logger log = LoggerFactory.getLogger(SpringInitializrClient.class);
+
     private final HttpClient httpClient;
     private final InitializrUriBuilder initializrUriBuilder;
 
     public void downloadProject(InitializrRequest initializrRequest, Path output)
-            throws IOException, InterruptedException {
+            throws InterruptedException {
         URI uri = initializrUriBuilder.build(initializrRequest);
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(uri)
-                .GET()
-                .build();
-
-        HttpResponse<Path> response = httpClient.send(
-                request,
-                HttpResponse.BodyHandlers.ofFile(output)
+        log.debug(
+                "Requesting Spring Initializr for artifact '{}'",
+                initializrRequest.artifactId()
         );
 
-        if (response.statusCode() != 200) {
-            throw new IOException(
-                    "Initializr returned HTTP " + response.statusCode()
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(uri)
+                    .GET()
+                    .build();
+
+            HttpResponse<Path> response = httpClient.send(
+                    request,
+                    HttpResponse.BodyHandlers.ofFile(output)
             );
+
+            if (response.statusCode() != 200) {
+                throw new InitializrException("Spring Initializr returned HTTP " + response.statusCode());
+            }
+
+        } catch (IOException e) {
+            throw new InitializrException("Failed to download project from Spring Initializr", e);
         }
     }
 }

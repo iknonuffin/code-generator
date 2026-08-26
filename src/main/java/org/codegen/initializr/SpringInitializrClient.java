@@ -1,9 +1,8 @@
 package org.codegen.initializr;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.codegen.exception.InitializrException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
@@ -13,9 +12,8 @@ import java.net.http.HttpResponse;
 import java.nio.file.Path;
 
 @RequiredArgsConstructor
+@Slf4j
 public class SpringInitializrClient {
-    private static final Logger log = LoggerFactory.getLogger(SpringInitializrClient.class);
-
     private final HttpClient httpClient;
     private final InitializrUriBuilder initializrUriBuilder;
 

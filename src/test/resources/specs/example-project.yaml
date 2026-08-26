@@ -3,10 +3,10 @@ project:
   basePackage: com.github.iknonuffin.marketplace
 
 generator:
-  generateControllers: true
-  generateServices: true
-  generateRepositories: true
-  generateDtos: true
+  generateControllers: false
+  generateServices: false
+  generateRepositories: false
+  generateDtos: false
   generateEvents: false
 
 services:

@@ -1,31 +1,45 @@
 package org.codegen.cli;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.codegen.exception.GenerationException;
 import org.codegen.generator.ProjectGenerator;
 import org.codegen.parser.YamlParser;
 import org.codegen.spec.ProjectSpecification;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 @RequiredArgsConstructor
+@Slf4j
 public class Cli {
-    private static final Logger log = LoggerFactory.getLogger(Cli.class);
     private final YamlParser parser;
     private final ProjectGenerator projectGenerator;
 
     public int run(String[] args) {
-        log.debug("Received {} CLI arguments", args.length);
+        log.debug("Received {} CLI arguments: {}", args.length, args);
 
-        if (args.length != 1) {
+        if (args.length != 1 && args.length != 3) {
             printUsage();
             return 2;
         }
 
         Path spec = Path.of(args[0]);
+
+        Path outputDirectory;
+
+        if (args.length == 1) {
+            outputDirectory = defaultOutputDir();
+        } else {
+            if (!args[1].equals("--output") && !args[1].equals("-o")) {
+                printUsage();
+                return 2;
+            }
+
+            outputDirectory = Path.of(args[2])
+                    .toAbsolutePath()
+                    .normalize();
+        }
 
         log.debug("Using specification: {}", spec.toAbsolutePath().normalize());
 
@@ -55,7 +69,7 @@ public class Cli {
         );
 
         try {
-            projectGenerator.generate(projSpec);
+            projectGenerator.generate(projSpec, outputDirectory);
         } catch (GenerationException e) {
             System.err.println("Error: " + e.getMessage());
             log.error("Generation failed", e);
@@ -76,6 +90,16 @@ public class Cli {
     }
 
     private void printUsage() {
-        System.out.println("Usage: codegen <spec.yaml>");
+        System.out.println("""
+                Usage: codegen [FILE] [OPTION]
+                
+                -o, --output        specify custom generation directory
+                """);
+    }
+
+    private Path defaultOutputDir() {
+        return Path.of(
+                System.getProperty("user.home"), "IdeaProjects"
+        ).toAbsolutePath().normalize();
     }
 }

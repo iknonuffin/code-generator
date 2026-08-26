@@ -3,9 +3,8 @@ package org.codegen.template;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import lombok.extern.slf4j.Slf4j;
 import org.codegen.exception.GenerationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -13,9 +12,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 
+@Slf4j
 public class TemplateProcessor {
-    private static final Logger log = LoggerFactory.getLogger(TemplateProcessor.class);
-
     private final Configuration freemarkerCfg;
 
     public TemplateProcessor() {

@@ -1,12 +1,11 @@
 package org.codegen.generator;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.codegen.exception.GenerationException;
 import org.codegen.spec.ProjectSpecification;
 import org.codegen.spec.MicroserviceDefiniton;
 import org.codegen.template.TemplateProcessor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,20 +17,17 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor
+@Slf4j
 public class ProjectGenerator {
-    private static final Logger log = LoggerFactory.getLogger(ProjectGenerator.class);
-
     private final TemplateProcessor templateProcessor;
     private final MicroserviceGenerator microserviceGenerator;
 
     private final static String DOCKER_COMPOSE_TEMPLATE_FILE_NAME = "compose.ftl";
 
-    public void generate(ProjectSpecification spec) throws InterruptedException {
-        Path ideaProjects = Path.of(System.getProperty("user.home"), "IdeaProjects");
+    public void generate(ProjectSpecification spec, Path outputDirectory) throws InterruptedException {
+        log.debug("Output directory: {}", outputDirectory);
 
-        log.debug("Output directory: {}", ideaProjects);
-
-        Path projectDir = ideaProjects.resolve(spec.project().name());
+        Path projectDir = outputDirectory.resolve(spec.project().name());
         try {
             log.debug("Creating project directory: {}", projectDir);
             createProjectDirectory(projectDir);

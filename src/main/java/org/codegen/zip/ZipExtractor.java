@@ -1,8 +1,7 @@
 package org.codegen.zip;
 
+import lombok.extern.slf4j.Slf4j;
 import org.codegen.exception.GenerationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,8 +10,8 @@ import java.nio.file.StandardCopyOption;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+@Slf4j
 public class ZipExtractor {
-    private final static Logger log = LoggerFactory.getLogger(ZipExtractor.class);
 
     public void extract(Path zipFile, Path destination) {
         Path target = destination.toAbsolutePath().normalize();

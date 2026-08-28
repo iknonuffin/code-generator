@@ -3,6 +3,7 @@ package org.codegen.generator;
 import org.codegen.app.Application;
 import org.codegen.cli.Cli;
 import org.junit.jupiter.api.Test;
+// import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Files;
@@ -12,12 +13,12 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ProjectGenerationTest {
-    @TempDir
+    @TempDir // (cleanup = CleanupMode.NEVER)
     private Path tempDirectory;
 
     @Test
     void generatesProject() throws Exception {
-        System.out.println("Temp dir: " + tempDirectory.toAbsolutePath().normalize());
+//        System.out.println("Temp dir: " + tempDirectory.toAbsolutePath().normalize());
 
         Path spec = Path.of(
                 Objects.requireNonNull(
@@ -25,7 +26,7 @@ public class ProjectGenerationTest {
                 ).toURI()
         );
 
-        System.out.println("Spec: " + spec.toAbsolutePath().normalize());
+//        System.out.println("Spec: " + spec.toAbsolutePath().normalize());
 
         Cli cli = Application.create().cli();
 
@@ -40,34 +41,53 @@ public class ProjectGenerationTest {
 
         Path projectDirectory = tempDirectory.resolve("marketplace");
 
+        Path orderService = projectDirectory.resolve("order-service");
+
+        Path productService = projectDirectory.resolve("product-service");
+
+        Path userService = projectDirectory.resolve("user-service");
+
+        Path orderServiceEntityDirectory = orderService
+                .resolve("src/main/java/com/github/iknonuffin/marketplace/order/entity");
+
+        Path orderEntity = orderServiceEntityDirectory.resolve("Order.java");
+
         assertAll(
                 () -> assertTrue(
-                        Files.isDirectory(projectDirectory)
+                        Files.isDirectory(projectDirectory),
+                        "Project directory was not generated"
                 ),
                 () -> assertTrue(
-                        Files.isRegularFile(projectDirectory.resolve("compose.yaml"))
+                        Files.isRegularFile(projectDirectory.resolve("compose.yaml")),
+                        "compose.yaml was not generated"
+                ),
+
+                // Initializr ZIP already contains the service directory,
+                // so pom.xml should be directly inside order-service.
+                () -> assertTrue(
+                        Files.isRegularFile(orderService.resolve("pom.xml"))
+                ),
+                () -> assertTrue(
+                        Files.isRegularFile(productService.resolve("pom.xml"))
+                ),
+                () -> assertTrue(
+                        Files.isRegularFile(userService.resolve("pom.xml"))
                 ),
 
                 () -> assertTrue(
-                        Files.isRegularFile(
-                                projectDirectory
-                                        .resolve("order-service")
-                                        .resolve("pom.xml")
-                        )
+                        Files.isDirectory(orderServiceEntityDirectory),
+                        "Entity directory should use the expected Java package"
                 ),
                 () -> assertTrue(
-                        Files.isRegularFile(
-                                projectDirectory
-                                        .resolve("product-service")
-                                        .resolve("pom.xml")
-                        )
+                        Files.isRegularFile(orderEntity),
+                        "Order.java should be generated under the expected Java package"
                 ),
+
                 () -> assertTrue(
-                        Files.isRegularFile(
-                                projectDirectory
-                                        .resolve("user-service")
-                                        .resolve("pom.xml")
-                        )
+                        Files.readString(orderEntity).contains(
+                                "package com.github.iknonuffin.marketplace.order.entity;"
+                        ),
+                        "Order.java should declare the expected Java package"
                 )
         );
     }

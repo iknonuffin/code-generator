@@ -31,7 +31,6 @@ public class Application {
 
         MicroserviceGenerator microserviceGenerator =
                 new MicroserviceGenerator(
-                        templateProcessor,
                         initializr,
                         zipExtractor,
                         entityGenerator

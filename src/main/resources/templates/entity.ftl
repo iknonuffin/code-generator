@@ -1,24 +1,27 @@
-package ${}.entity;
+package ${basePackage}.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-
-import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "${}")
+<#-- @Table(name = "${}") -->
 @NoArgsConstructor
 @Getter @Setter
-public class ${} {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private ${} id;
+public class ${entity.name} {
 
-<#list  as  >
-    @Column(nullable = ${}, unique = ${})
-    private ${} ${};
+<#list entity.fields as fieldName, fieldType>
+  <#-- @Column(nullable = ${}, unique = ${}) -->
+  <#if fieldName == "id">
+    @Id
+    <#if fieldType = "Long">
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    <#elseif fieldType == "UUID">
+    @GeneratedValue(strategy = GenerationType.UUID)
+    </#if>
+  </#if>
+    private ${fieldType} ${fieldName};
+
 </#list>
 }

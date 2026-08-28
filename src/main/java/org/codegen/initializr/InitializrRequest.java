@@ -15,17 +15,34 @@ public record InitializrRequest(
         String configurationFileFormat,
         List<String> dependencies
 ) {
-    public InitializrRequest(String baseDir,
-                             String groupId,
+    public InitializrRequest(String groupId,
                              String artifactId) {
         this(
                 "maven-project",
                 "java",
                 "4.1.0",
-                baseDir,
+                artifactId,
                 groupId,
                 artifactId,
                 groupId + "." + artifactId,
+                "jar",
+                "21",
+                "properties",
+                List.of("web", "data-jpa", "h2", "lombok", "postgresql")
+        );
+    }
+
+    public InitializrRequest(String groupId,
+                             String artifactId,
+                             String packageName) {
+        this(
+                "maven-project",
+                "java",
+                "4.1.0",
+                artifactId,
+                groupId,
+                artifactId,
+                packageName,
                 "jar",
                 "21",
                 "properties",

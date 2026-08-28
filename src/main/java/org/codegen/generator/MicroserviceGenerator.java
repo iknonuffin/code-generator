@@ -6,7 +6,6 @@ import org.codegen.exception.GenerationException;
 import org.codegen.initializr.InitializrRequest;
 import org.codegen.initializr.SpringInitializrClient;
 import org.codegen.spec.MicroserviceDefiniton;
-import org.codegen.template.TemplateProcessor;
 import org.codegen.zip.ZipExtractor;
 
 import java.io.IOException;
@@ -16,8 +15,6 @@ import java.nio.file.Path;
 @RequiredArgsConstructor
 @Slf4j
 public class MicroserviceGenerator {
-    private final TemplateProcessor templateProcessor;
-
     private final SpringInitializrClient initializrClient;
 
     private final ZipExtractor zipExtractor;
@@ -27,10 +24,11 @@ public class MicroserviceGenerator {
     public void generate(MicroserviceDefiniton microserviceDefiniton,
                          Path location,
                          String projectBasePackage) throws InterruptedException {
+
         InitializrRequest initializrRequest = new InitializrRequest(
-                microserviceDefiniton.name(),
                 projectBasePackage,
-                microserviceDefiniton.name()
+                microserviceDefiniton.name(),
+                projectBasePackage + "." + microserviceDefiniton.packageName()
         );
 
         try {
@@ -53,6 +51,15 @@ public class MicroserviceGenerator {
                     e
             );
         }
-    }
 
+        Path microserviceProjectPath = location.resolve(microserviceDefiniton.name());
+        String microserviceProjectBasePackage = initializrRequest.packageName()
+                        .replace("-", "_");
+
+        entityGenerator.generate(
+                microserviceDefiniton.entities(),
+                microserviceProjectPath,
+                microserviceProjectBasePackage
+        );
+    }
 }

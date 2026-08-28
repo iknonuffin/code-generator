@@ -22,7 +22,8 @@ public class SpringInitializrClient {
         URI uri = initializrUriBuilder.build(initializrRequest);
 
         log.debug(
-                "Requesting Spring Initializr for artifact '{}'",
+                "Requesting Spring Initializr with request: {} for artifact '{}'",
+                initializrRequest,
                 initializrRequest.artifactId()
         );
 

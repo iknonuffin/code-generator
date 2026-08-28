@@ -13,6 +13,8 @@ services:
 
   - name: order-service
 
+    packageName: order
+
     enums:
       - name: OrderStatus
         values:
@@ -32,6 +34,8 @@ services:
 
   - name: product-service
 
+    packageName: product
+
     entities:
       - name: Product
 
@@ -41,6 +45,8 @@ services:
           price: BigDecimal
 
   - name: user-service
+
+    packageName: user
 
     entities:
       - name: User

@@ -55,7 +55,3 @@ services:
           id: Long
           username: String
           password: String
-
-        overrides:
-          service:
-            name: OrderManagementService

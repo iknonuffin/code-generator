@@ -3,6 +3,7 @@ package org.codegen.app;
 import lombok.RequiredArgsConstructor;
 import org.codegen.cli.Cli;
 import org.codegen.generator.EntityGenerator;
+import org.codegen.generator.EnumGenerator;
 import org.codegen.generator.MicroserviceGenerator;
 import org.codegen.generator.ProjectGenerator;
 import org.codegen.initializr.InitializrUriBuilder;
@@ -18,14 +19,15 @@ public class Application {
     private final Cli cli;
 
     public static Application create() {
-        TemplateProcessor templateProcessor = new TemplateProcessor();
-
-        EntityGenerator entityGenerator = new EntityGenerator(templateProcessor);
-
         SpringInitializrClient initializr = new SpringInitializrClient(
                 HttpClient.newHttpClient(),
                 new InitializrUriBuilder()
         );
+
+        TemplateProcessor templateProcessor = new TemplateProcessor();
+
+        EntityGenerator entityGenerator = new EntityGenerator(templateProcessor);
+        EnumGenerator enumGenerator = new EnumGenerator(templateProcessor);
 
         ZipExtractor zipExtractor = new ZipExtractor();
 
@@ -33,7 +35,8 @@ public class Application {
                 new MicroserviceGenerator(
                         initializr,
                         zipExtractor,
-                        entityGenerator
+                        entityGenerator,
+                        enumGenerator
                 );
 
         ProjectGenerator projectGenerator =

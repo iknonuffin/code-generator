@@ -5,7 +5,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 public class InitializrUriBuilder {
-    private final static String BASE_URL = "https://start.spring.io/starter.zip";
+    private static final String BASE_URL = "https://start.spring.io/starter.zip";
 
     public URI build(InitializrRequest request) {
         String query = buildQuery(request);

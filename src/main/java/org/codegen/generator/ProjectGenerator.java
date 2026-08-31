@@ -22,7 +22,7 @@ public class ProjectGenerator {
     private final TemplateProcessor templateProcessor;
     private final MicroserviceGenerator microserviceGenerator;
 
-    private final static String DOCKER_COMPOSE_TEMPLATE_FILE_NAME = "compose.ftl";
+    private static final String DOCKER_COMPOSE_TEMPLATE_FILE_NAME = "compose.ftl";
 
     public void generate(ProjectSpecification spec, Path outputDirectory) throws InterruptedException {
         log.debug("Output directory: {}", outputDirectory);

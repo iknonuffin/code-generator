@@ -5,12 +5,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.codegen.exception.GenerationException;
 import org.codegen.initializr.InitializrRequest;
 import org.codegen.initializr.SpringInitializrClient;
+import org.codegen.spec.EntityDefinition;
+import org.codegen.spec.EnumDefinition;
 import org.codegen.spec.MicroserviceDefiniton;
 import org.codegen.zip.ZipExtractor;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -23,30 +27,33 @@ public class MicroserviceGenerator {
     private final EnumGenerator enumGenerator;
 
     public void generate(
-            MicroserviceDefiniton microserviceDefiniton,
+            MicroserviceDefiniton microservice,
             Path location,
             String projectBasePackage) throws InterruptedException {
 
         InitializrRequest initializrRequest =
                 createInitializrRequest(
-                        microserviceDefiniton, projectBasePackage
+                        microservice, projectBasePackage
                 );
 
-        generateSpringProject(microserviceDefiniton, initializrRequest, location);
+        generateSpringProject(microservice, initializrRequest, location);
 
-        Path microserviceProjectPath = location.resolve(microserviceDefiniton.name());
-        String microserviceProjectBasePackage = initializrRequest.packageName();
+        Path microserviceProjectPath = location.resolve(microservice.name());
+        String microserviceBasePackage = initializrRequest.packageName();
+
+        Map<String, String> typePackages = buildTypePackages(microservice, microserviceBasePackage);
 
         entityGenerator.generate(
-                microserviceDefiniton.entities(),
+                microservice.entities(),
                 microserviceProjectPath,
-                microserviceProjectBasePackage
+                microserviceBasePackage,
+                typePackages
         );
 
         enumGenerator.generate(
-                microserviceDefiniton.enums(),
+                microservice.enums(),
                 microserviceProjectPath,
-                microserviceProjectBasePackage
+                microserviceBasePackage
         );
     }
 
@@ -95,13 +102,33 @@ public class MicroserviceGenerator {
         } finally {
             if (projectZip != null) {
                 try {
-                    Files.delete(projectZip);
+                    Files.deleteIfExists(projectZip);
                 } catch (IOException e) {
                     log.warn("Failed to delete temporary ZIP '{}'", projectZip, e);
                 }
             }
         }
 
+    }
+
+    private Map<String, String> buildTypePackages(
+            MicroserviceDefiniton microservice,
+            String basePackage
+    ) {
+        Map<String, String> typePackages = new HashMap<>();
+
+        String entityPackage = basePackage + ".entity";
+        String enumPackage = basePackage + ".enums";
+
+        for (EntityDefinition entity : microservice.entities()) {
+            typePackages.put(entity.name(), entityPackage);
+        }
+
+        for (EnumDefinition enumDefinition : microservice.enums()) {
+            typePackages.put(enumDefinition.name(), enumPackage);
+        }
+
+        return typePackages;
     }
 
 }

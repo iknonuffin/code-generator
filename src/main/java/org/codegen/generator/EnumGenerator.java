@@ -20,6 +20,10 @@ public class EnumGenerator {
     private static final String ENUM_TEMPLATE_FILE_NAME = "enum.ftl";
 
     public void generate(List<EnumDefinition> enums, Path projectPath, String basePackage) {
+        if (enums.isEmpty()) {
+            return;
+        }
+
         Path generationPath = projectPath
                 .resolve("src/main/java")
                 .resolve(basePackage.replace(".", "/"))

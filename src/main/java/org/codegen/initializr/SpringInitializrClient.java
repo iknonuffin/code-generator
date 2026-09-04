@@ -9,6 +9,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 @RequiredArgsConstructor
@@ -40,6 +41,15 @@ public class SpringInitializrClient {
 
             if (response.statusCode() != 200) {
                 throw new InitializrException("Spring Initializr returned HTTP " + response.statusCode());
+            }
+
+            if (!Files.isRegularFile(output)) {
+                throw new InitializrException(
+                        "Spring Initializr response was successful, "
+                                + "but no project ZIP was created at '"
+                                + output
+                                + "'"
+                );
             }
 
         } catch (IOException e) {

@@ -6,6 +6,7 @@ import org.codegen.generator.EntityGenerator;
 import org.codegen.generator.EnumGenerator;
 import org.codegen.generator.MicroserviceGenerator;
 import org.codegen.generator.ProjectGenerator;
+import org.codegen.generator.imports.ImportResolver;
 import org.codegen.initializr.InitializrUriBuilder;
 import org.codegen.initializr.SpringInitializrClient;
 import org.codegen.parser.YamlParser;
@@ -26,7 +27,9 @@ public class Application {
 
         TemplateProcessor templateProcessor = new TemplateProcessor();
 
-        EntityGenerator entityGenerator = new EntityGenerator(templateProcessor);
+        ImportResolver importResolver = new ImportResolver();
+
+        EntityGenerator entityGenerator = new EntityGenerator(templateProcessor, importResolver);
         EnumGenerator enumGenerator = new EnumGenerator(templateProcessor);
 
         ZipExtractor zipExtractor = new ZipExtractor();

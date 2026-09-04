@@ -13,7 +13,7 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ProjectGenerationTest {
-    @TempDir // (cleanup = CleanupMode.NEVER)
+    @TempDir// (cleanup = CleanupMode.NEVER)
     private Path tempDirectory;
 
     @Test
@@ -63,7 +63,7 @@ public class ProjectGenerationTest {
                 ),
 
                 // Initializr ZIP already contains the service directory,
-                // so pom.xml should be directly inside order-service.
+                // so pom.xml should be directly inside order-service
                 () -> assertTrue(
                         Files.isRegularFile(orderService.resolve("pom.xml"))
                 ),
@@ -89,6 +89,26 @@ public class ProjectGenerationTest {
                         ),
                         "Order.java should declare the expected Java package"
                 )
+        );
+
+        String orderEntitySource = Files.readString(orderEntity);
+
+        String expectedImports = """
+                import com.github.iknonuffin.marketplace.order.enums.OrderStatus;
+                import jakarta.persistence.Entity;
+                import jakarta.persistence.GeneratedValue;
+                import jakarta.persistence.GenerationType;
+                import jakarta.persistence.Id;
+                import lombok.Getter;
+                import lombok.NoArgsConstructor;
+                import lombok.Setter;
+                
+                import java.math.BigDecimal;
+                """;
+
+        assertTrue(
+                orderEntitySource.contains(expectedImports),
+                "Order.java should contain imports in the expected order"
         );
     }
 }

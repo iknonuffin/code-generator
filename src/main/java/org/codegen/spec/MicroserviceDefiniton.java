@@ -7,4 +7,8 @@ public record MicroserviceDefiniton(
         String packageName,
         List<EnumDefinition> enums,
         List<EntityDefinition> entities
-) {}
+) {
+    public MicroserviceDefiniton {
+        enums = enums == null ? List.of() : enums;
+    }
+}

@@ -3,10 +3,13 @@ package org.codegen.generator.imports;
 import org.codegen.generator.GenerationContext;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.Map.entry;
 
 public class ImportResolver {
+
+    private static final int WILDCARD_IMPORT_THRESHOLD = 5;
 
     private static final Map<String, String> TYPE_IMPORTS = Map.ofEntries(
             entry("UUID", "java.util.UUID"),
@@ -24,10 +27,14 @@ public class ImportResolver {
             entry("Id", "jakarta.persistence.Id"),
             entry("GeneratedValue", "jakarta.persistence.GeneratedValue"),
             entry("GenerationType", "jakarta.persistence.GenerationType"),
+            entry("Table", "jakarta.persistence.Table"),
+            entry("Column", "jakarta.persistence.Column"),
 
             entry("Getter", "lombok.Getter"),
             entry("Setter", "lombok.Setter"),
-            entry("NoArgsConstructor", "lombok.NoArgsConstructor")
+            entry("NoArgsConstructor", "lombok.NoArgsConstructor"),
+            entry("AllArgsConstructor", "lombok.AllArgsConstructor"),
+            entry("Builder", "lombok.Builder")
     );
 
     public ResolvedImports resolve(Set<String> types, GenerationContext context) {
@@ -51,8 +58,8 @@ public class ImportResolver {
         }
 
         return new ResolvedImports(
-                List.copyOf(otherImports),
-                List.copyOf(javaImports)
+                collapseImports(otherImports),
+                collapseImports(javaImports)
         );
     }
 
@@ -95,5 +102,33 @@ public class ImportResolver {
         }
 
         return typeNames;
+    }
+
+    private List<String> collapseImports(Set<String> imports) {
+        Map<String, List<String>> importsByPackage = imports.stream()
+                .collect(Collectors.groupingBy(
+                        this::getPkgName,
+                        TreeMap::new,
+                        Collectors.toList()
+                ));
+
+        List<String> result = new ArrayList<>();
+
+        for (Map.Entry<String, List<String>> entry : importsByPackage.entrySet()) {
+            String packageName = entry.getKey();
+            List<String> packageImports = entry.getValue();
+
+            if (packageImports.size() >= WILDCARD_IMPORT_THRESHOLD) {
+                result.add(packageName + ".*");
+            } else {
+                result.addAll(packageImports);
+            }
+        }
+
+        return result;
+    }
+
+    private String getPkgName(String importName) {
+        return importName.substring(0, importName.lastIndexOf('.'));
     }
 }

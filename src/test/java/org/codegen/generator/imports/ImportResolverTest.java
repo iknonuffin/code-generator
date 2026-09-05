@@ -24,7 +24,7 @@ public class ImportResolverTest {
     }
 
     @Test
-    void shouldKeepJavaAndOtherImportsInSeparateGroups() {
+    void keepsJavaAndOtherImportsInSeparateGroups() {
         GenerationContext context = new GenerationContext(
                 "com.example.entity",
                 Map.of()

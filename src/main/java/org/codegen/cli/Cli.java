@@ -91,9 +91,15 @@ public class Cli {
 
     private void printUsage() {
         System.out.println("""
-                Usage: codegen [FILE] [OPTION]
+                codegen <FILE> [OPTIONS]
                 
-                -o, --output        specify custom generation directory
+                codegen - a Java & Spring Boot code generator
+                
+                ARGUMENTS:
+                    <FILE>                  path of YAML spec file
+                
+                OPTIONS:
+                    -o, --output <DIR>      specify custom generation directory [default: ~/IdeaProjects]
                 """);
     }
 
